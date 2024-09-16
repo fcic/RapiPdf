@@ -137,32 +137,78 @@ function getParameterTableDef(parameters, paramType, localize, includeExample = 
     }
   } else {
     parameters.map((param) => {
-      const paramSchema = getTypeInfo(param.schema);
-      tableContent.push([
-        {
-          text: [
-            { text: param.required ? '*' : '', style: ['small', 'b', 'red', 'mono'] },
-            { text: param.name, style: ['small', 'mono'] },
-            (paramSchema.deprecated ? { text: `\n${localize.deprecated}`, style: ['small', 'red', 'b'] } : ''),
-          ],
-        },
-        {
-          stack: [
-            { text: `${paramSchema.type === 'array' ? paramSchema.arrayType : (paramSchema.format ? paramSchema.format : paramSchema.type)}`, style: ['small', 'mono'] },
-            (paramSchema.constrain ? { text: paramSchema.constrain, style: ['small', 'gray'] } : ''),
-            (paramSchema.allowedValues ? {
-              text: [
-                { text: `${localize.allowed}: `, style: ['b', 'sub'] },
-                { text: paramSchema.allowedValues, style: ['small', 'lightGray'] },
-              ],
-            } : ''
-            ),
-            (paramSchema.pattern ? { text: `${localize.pattern}: ${paramSchema.pattern}`, style: ['small', 'gray'] } : ''),
-          ],
-        },
-        { text: includeExample ? (param.example ? param.example : (param.examples && param.examples[0] ? param.examples[0] : '')) : '', style: ['small'], margin: [0, 2, 0, 0] },
-        { text: param.description, style: ['small'], margin: [0, 2, 0, 0] },
-      ]);
+      if (param.schema) {
+        const paramSchema = getTypeInfo(param.schema);
+        tableContent.push([
+          {
+            text: [
+              { text: param.required ? '*' : '', style: ['small', 'b', 'red', 'mono'] },
+              { text: param.name, style: ['small', 'mono'] },
+              (paramSchema.deprecated ? { text: `\n${localize.deprecated}`, style: ['small', 'red', 'b'] } : ''),
+            ],
+          },
+          {
+            stack: [
+              { text: `${paramSchema.type === 'array' ? paramSchema.arrayType : (paramSchema.format ? paramSchema.format : paramSchema.type)}`, style: ['small', 'mono'] },
+              (paramSchema.constrain ? { text: paramSchema.constrain, style: ['small', 'gray'] } : ''),
+              (paramSchema.allowedValues ? {
+                text: [
+                  { text: `${localize.allowed}: `, style: ['b', 'sub'] },
+                  { text: paramSchema.allowedValues, style: ['small', 'lightGray'] },
+                ],
+              } : ''
+              ),
+              (paramSchema.pattern ? { text: `${localize.pattern}: ${paramSchema.pattern}`, style: ['small', 'gray'] } : ''),
+            ],
+          },
+          { text: includeExample ? (param.example ? param.example : (param.examples && param.examples[0] ? param.examples[0] : '')) : '', style: ['small'], margin: [0, 2, 0, 0] },
+          { text: param.description, style: ['small'], margin: [0, 2, 0, 0] },
+        ]);
+      } else if (param.content) {
+        const contentType = Object.keys(param.content)[0];
+        const paramSchema = getTypeInfo(param.content[contentType].schema);
+        tableContent.push([
+          {
+            text: [
+              { text: param.required ? '*' : '', style: ['small', 'b', 'red', 'mono'] },
+              { text: param.name, style: ['small', 'mono'] },
+              (paramSchema.deprecated ? { text: `\n${localize.deprecated}`, style: ['small', 'red', 'b'] } : ''),
+            ],
+          },
+          {
+            stack: [
+              { text: `${paramSchema.type === 'array' ? paramSchema.arrayType : (paramSchema.format ? paramSchema.format : paramSchema.type)}`, style: ['small', 'mono'] },
+              (paramSchema.constrain ? { text: paramSchema.constrain, style: ['small', 'gray'] } : ''),
+              (paramSchema.allowedValues ? {
+                text: [
+                  { text: `${localize.allowed}: `, style: ['b', 'sub'] },
+                  { text: paramSchema.allowedValues, style: ['small', 'lightGray'] },
+                ],
+              } : ''
+              ),
+              (paramSchema.pattern ? { text: `${localize.pattern}: ${paramSchema.pattern}`, style: ['small', 'gray'] } : ''),
+            ],
+          },
+          { text: includeExample ? (param.example ? param.example : (param.examples && param.examples[0] ? param.examples[0] : '')) : '', style: ['small'], margin: [0, 2, 0, 0] },
+          { text: param.description, style: ['small'], margin: [0, 2, 0, 0] },
+        ]);
+      } else {
+        tableContent.push([
+          {
+            text: [
+              { text: param.required ? '*' : '', style: ['small', 'b', 'red', 'mono'] },
+              { text: param.name, style: ['small', 'mono'] },
+            ],
+          },
+          {
+            stack: [
+              { text: '', style: ['small', 'mono'] },
+            ],
+          },
+          { text: includeExample ? (param.example ? param.example : (param.examples && param.examples[0] ? param.examples[0] : '')) : '', style: ['small'], margin: [0, 2, 0, 0] },
+          { text: param.description, style: ['small'], margin: [0, 2, 0, 0] },
+        ]);
+      }
     });
   }
 
